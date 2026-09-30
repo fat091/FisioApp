@@ -1,0 +1,329 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FisioApp - Registro</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:#f1f5f9;
+}
+
+.container-register{
+    display:flex;
+    min-height:100vh;
+}
+
+.left{
+    flex:1;
+    background:linear-gradient(135deg,#1e3a8a,#2563eb);
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+
+.left img{
+    width:90px;
+    margin-bottom:20px;
+}
+
+.left h1{
+    font-size:45px;
+    margin-bottom:15px;
+}
+
+.left p{
+    max-width:500px;
+    text-align:center;
+}
+
+.right{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.register-box{
+    width:500px;
+    background:white;
+    padding:35px;
+    border-radius:20px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.register-box h2{
+    text-align:center;
+    color:#1e3a8a;
+    margin-bottom:25px;
+}
+
+.form-group{
+    margin-bottom:15px;
+}
+
+.form-group label{
+    font-weight:600;
+    margin-bottom:5px;
+    display:block;
+}
+
+.form-control{
+    border-radius:10px;
+}
+
+.btn-register{
+    width:100%;
+    background:#2563eb;
+    color:white;
+    border:none;
+    padding:12px;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.btn-register:hover{
+    background:#1e40af;
+    transform:translateY(-2px);
+}
+
+.btn-login{
+    width:100%;
+    margin-top:10px;
+}
+
+.message{
+    margin-top:15px;
+    text-align:center;
+    font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container-register">
+
+    <div class="left">
+
+        <img src="img/logo.jpg" alt="Logo">
+
+        <h1>FisioApp</h1>
+
+        <p>
+            Registro de usuarios para la plataforma de
+            rehabilitación y seguimiento fisioterapéutico.
+        </p>
+
+    </div>
+
+    <div class="right">
+
+        <div class="register-box animate__animated animate__fadeInUp">
+
+            <h2>
+                <i class="fa-solid fa-user-plus"></i>
+                Registro
+            </h2>
+
+            <form id="registroForm">
+
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text"
+                    id="nombre"
+                    class="form-control"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Correo</label>
+                    <input type="email"
+                    id="correo"
+                    class="form-control"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Usuario</label>
+                    <input type="text"
+                    id="usuario"
+                    class="form-control"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password"
+                    id="password"
+                    class="form-control"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Confirmar Contraseña</label>
+                    <input type="password"
+                    id="confirmar"
+                    class="form-control"
+                    required>
+                </div>
+
+                <div class="form-group">
+                    <label>Rol</label>
+
+                    <select id="rol"
+                    class="form-control">
+
+                        
+                        <option>Fisioterapeuta</option>
+                        <option>Paciente</option>
+
+                    </select>
+
+                </div>
+
+                <button type="submit"
+                class="btn-register">
+
+                    Registrarse
+
+                </button>
+
+                <a href="login.html"
+                class="btn btn-outline-primary btn-login">
+
+                    Volver al Login
+
+                </a>
+
+                <div id="mensaje"
+                class="message"></div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("registroForm")
+.addEventListener("submit", function(e){
+
+    e.preventDefault();
+
+    let nombre =
+    document.getElementById("nombre").value;
+
+    let correo =
+    document.getElementById("correo").value;
+
+    let usuario =
+    document.getElementById("usuario").value;
+
+    let password =
+    document.getElementById("password").value;
+
+    let confirmar =
+    document.getElementById("confirmar").value;
+
+    let rol =
+    document.getElementById("rol").value;
+
+    if(password !== confirmar){
+
+        document.getElementById("mensaje")
+        .innerHTML =
+        "Las contraseñas no coinciden";
+
+        document.getElementById("mensaje")
+        .style.color="red";
+
+        return;
+    }
+
+    let usuarios =
+    JSON.parse(
+        localStorage.getItem("usuarios")
+    ) || [];
+
+    let existe =
+    usuarios.find(
+        u => u.usuario === usuario
+    );
+
+    if(existe){
+
+        document.getElementById("mensaje")
+        .innerHTML =
+        "Ese usuario ya existe";
+
+        document.getElementById("mensaje")
+        .style.color="red";
+
+        return;
+    }
+
+    usuarios.push({
+
+        id:Date.now(),
+        nombre:nombre,
+        correo:correo,
+        usuario:usuario,
+        password:password,
+        rol:rol
+
+    });
+
+    localStorage.setItem(
+        "usuarios",
+        JSON.stringify(usuarios)
+    );
+
+    document.getElementById("mensaje")
+    .innerHTML =
+    "Usuario registrado correctamente";
+
+    document.getElementById("mensaje")
+    .style.color="green";
+
+    document.getElementById("registroForm")
+.reset();
+
+setTimeout(() => {
+
+    window.location.href = "login.html";
+
+}, 1500);
+});
+
+</script>
+
+</body>
+</html>
+```

@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Fisioterapeutas</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+body{
+    background:#f1f5f9;
+}
+
+.container{
+    margin-top:40px;
+}
+
+.card{
+    border:none;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+}
+
+h2{
+    color:#1e3a8a;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card p-4">
+
+<h2>
+
+<i class="fa-solid fa-user-doctor"></i>
+
+Fisioterapeutas Registrados
+
+</h2>
+<div class="row mb-3">
+
+<div class="col-md-6">
+
+<input
+type="text"
+id="buscar"
+class="form-control"
+placeholder="🔍 Buscar fisioterapeuta...">
+
+</div>
+
+</div>
+<hr>
+
+<table class="table table-hover" id="tablaFisios">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>Nombre</th>
+
+<th>Correo</th>
+
+<th>Usuario</th>
+
+<th>Pacientes</th>
+
+<th>Estado</th>
+
+<th>Acciones</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+<a
+href="dashboard.html"
+class="btn btn-primary">
+
+<i class="fa fa-arrow-left"></i>
+
+Volver al Dashboard
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+const usuarios =
+JSON.parse(
+localStorage.getItem("usuarios")
+) || [];
+
+const pacientes =
+JSON.parse(
+localStorage.getItem("pacientes")
+) || [];
+
+function cargarFisios(texto=""){
+
+let html="";
+
+usuarios
+.filter(u=>u.rol==="Fisioterapeuta")
+.filter(f=>
+
+f.nombre.toLowerCase().includes(texto.toLowerCase()) ||
+
+f.usuario.toLowerCase().includes(texto.toLowerCase()) ||
+
+f.correo.toLowerCase().includes(texto.toLowerCase())
+
+)
+.forEach(f=>{
+
+let cantidad = pacientes.filter(
+
+p=>p.fisioterapeuta===f.usuario
+
+).length;
+
+html+=`
+
+<tr>
+
+<td>${f.nombre}</td>
+
+<td>${f.correo}</td>
+
+<td>${f.usuario}</td>
+
+<td>
+
+<span class="badge bg-primary">
+
+${cantidad}
+
+</span>
+
+</td>
+
+<td>
+
+<span class="badge bg-success">
+
+Activo
+
+</span>
+
+</td>
+
+<td>
+
+<button
+class="btn btn-info btn-sm"
+onclick="verFisio('${f.usuario}')">
+
+<i class="fa fa-eye"></i>
+
+</button>
+
+<button
+class="btn btn-warning btn-sm"
+onclick="editarFisio(${f.id})">
+
+<i class="fa fa-edit"></i>
+
+</button>
+
+<button
+class="btn btn-danger btn-sm"
+onclick="eliminarFisio(${f.id})">
+
+<i class="fa fa-trash"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.querySelector("#tablaFisios tbody").innerHTML = html;
+
+}
+
+cargarFisios();
+
+document.querySelector(
+"#tablaFisios tbody"
+).innerHTML=html;
+
+function verFisio(usuario){
+
+    console.log("Fisioterapeuta seleccionado:", usuario);
+
+    localStorage.setItem(
+        "fisioSeleccionado",
+        usuario
+    );
+
+    alert("Se seleccionó: " + usuario);
+
+    window.location.href = "detalles_fisioterapeuta.html";
+
+}
+function editarFisio(id){
+
+let usuarios = JSON.parse(
+
+localStorage.getItem("usuarios")
+
+) || [];
+
+let fisio = usuarios.find(
+
+u=>u.id==id
+
+);
+
+document.getElementById("editId").value = fisio.id;
+
+document.getElementById("editNombre").value = fisio.nombre;
+
+document.getElementById("editCorreo").value = fisio.correo;
+
+document.getElementById("editUsuario").value = fisio.usuario;
+
+document.getElementById("editPassword").value = fisio.password;
+
+new bootstrap.Modal(
+
+document.getElementById("modalEditar")
+
+).show();
+
+}
+
+function guardarCambios(){
+
+let usuarios = JSON.parse(
+
+localStorage.getItem("usuarios")
+
+) || [];
+
+let id = Number(
+
+document.getElementById("editId").value
+
+);
+
+let indice = usuarios.findIndex(
+
+u=>u.id===id
+
+);
+
+usuarios[indice].nombre =
+document.getElementById("editNombre").value;
+
+usuarios[indice].correo =
+document.getElementById("editCorreo").value;
+
+usuarios[indice].usuario =
+document.getElementById("editUsuario").value;
+
+usuarios[indice].password =
+document.getElementById("editPassword").value;
+
+localStorage.setItem(
+
+"usuarios",
+
+JSON.stringify(usuarios)
+
+);
+
+bootstrap.Modal.getInstance(
+
+document.getElementById("modalEditar")
+
+).hide();
+
+cargarFisios();
+
+}
+
+
+function eliminarFisio(id){
+
+if(!confirm(
+"¿Eliminar fisioterapeuta?"
+)) return;
+
+let usuarios =
+JSON.parse(
+localStorage.getItem("usuarios")
+) || [];
+
+usuarios = usuarios.filter(
+
+u=>u.id!=id
+
+);
+
+localStorage.setItem(
+
+"usuarios",
+
+JSON.stringify(usuarios)
+
+);
+
+location.reload();
+
+}
+document
+.getElementById("buscar")
+.addEventListener("keyup",function(){
+
+cargarFisios(this.value);
+
+});
+</script>
+<div class="modal fade" id="modalEditar" tabindex="-1">
+
+<div class="modal-dialog">
+
+<div class="modal-content">
+
+<div class="modal-header bg-primary text-white">
+
+<h5 class="modal-title">
+
+Editar Fisioterapeuta
+
+</h5>
+
+<button
+class="btn-close"
+data-bs-dismiss="modal"></button>
+
+</div>
+
+<div class="modal-body">
+
+<input type="hidden" id="editId">
+
+<div class="mb-3">
+
+<label>Nombre</label>
+
+<input
+type="text"
+id="editNombre"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Correo</label>
+
+<input
+type="email"
+id="editCorreo"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Usuario</label>
+
+<input
+type="text"
+id="editUsuario"
+class="form-control">
+
+</div>
+
+<div class="mb-3">
+
+<label>Contraseña</label>
+
+<input
+type="text"
+id="editPassword"
+class="form-control">
+
+</div>
+
+</div>
+
+<div class="modal-footer">
+
+<button
+class="btn btn-secondary"
+data-bs-dismiss="modal">
+
+Cancelar
+
+</button>
+
+<button
+class="btn btn-success"
+onclick="guardarCambios()">
+
+Guardar
+
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<title>Detalle Fisioterapeuta</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+body{
+
+background:#f1f5f9;
+
+}
+
+.card{
+
+border:none;
+
+border-radius:15px;
+
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+margin-top:30px;
+
+}
+
+.info{
+
+font-size:18px;
+
+margin-bottom:10px;
+
+}
+
+.table td{
+
+vertical-align:middle;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="card p-4">
+
+<h2>
+
+<i class="fa-solid fa-user-doctor"></i>
+
+Detalle del Fisioterapeuta
+
+</h2>
+
+<hr>
+
+<div id="datos"></div>
+
+<hr>
+
+<h4>
+
+Pacientes Asignados
+
+</h4>
+
+<table
+class="table table-hover"
+id="tablaPacientes">
+
+<thead class="table-primary">
+
+<tr>
+
+<th>Nombre</th>
+
+<th>Diagnóstico</th>
+
+<th>Estado</th>
+
+<th>Expediente</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+<hr>
+
+<h4>
+
+Estadísticas
+
+</h4>
+
+<div class="row">
+
+<div class="col-md-4">
+
+<div class="alert alert-primary">
+
+Pacientes
+
+<h3 id="pacientesTotal">
+
+0
+
+</h3>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="alert alert-success">
+
+Activos
+
+<h3 id="activos">
+
+0
+
+</h3>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="alert alert-warning">
+
+Sesiones
+
+<h3 id="sesiones">
+
+0
+
+</h3>
+
+</div>
+
+</div>
+
+</div>
+
+<a
+href="fisioterapeutas_admin.html"
+class="btn btn-primary">
+
+<i class="fa fa-arrow-left"></i>
+
+Volver
+
+</a>
+
+</div>
+
+</div>
+
+<script>
+
+const usuario =
+
+localStorage.getItem(
+"fisioSeleccionado"
+);
+
+const usuarios =
+JSON.parse(
+localStorage.getItem("usuarios")
+)||[];
+
+const pacientes =
+JSON.parse(
+localStorage.getItem("pacientes")
+)||[];
+
+const sesiones =
+JSON.parse(
+localStorage.getItem("sesiones")
+)||[];
+
+const fisio =
+usuarios.find(
+
+u=>u.usuario===usuario
+
+);
+
+document.getElementById("datos").innerHTML=`
+
+<div class="info">
+
+<b>Nombre:</b>
+
+${fisio.nombre}
+
+</div>
+
+<div class="info">
+
+<b>Correo:</b>
+
+${fisio.correo}
+
+</div>
+
+<div class="info">
+
+<b>Usuario:</b>
+
+${fisio.usuario}
+
+</div>
+
+`;
+
+let lista = pacientes.filter(
+
+p=>p.fisioterapeuta===usuario
+
+);
+
+let html="";
+
+let activados=0;
+
+let totalSesiones=0;
+
+lista.forEach(p=>{
+
+if(p.estado==="Activo")
+
+activados++;
+
+totalSesiones += sesiones.filter(
+
+s=>Number(s.pacienteId)==Number(p.id)
+
+).length;
+
+html+=`
+
+<tr>
+
+<td>
+
+${p.nombre}
+
+</td>
+
+<td>
+
+${p.diagnostico}
+
+</td>
+
+<td>
+
+<span class="badge bg-${p.estado=="Activo"?"success":"danger"}">
+
+${p.estado}
+
+</span>
+
+</td>
+
+<td>
+
+<button
+
+class="btn btn-primary btn-sm"
+
+onclick="abrirExpediente(${p.id})">
+
+<i class="fa fa-file-medical"></i>
+
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+document.querySelector(
+
+"#tablaPacientes tbody"
+
+).innerHTML=html;
+
+document.getElementById(
+
+"pacientesTotal"
+
+).innerHTML=lista.length;
+
+document.getElementById(
+
+"activos"
+
+).innerHTML=activados;
+
+document.getElementById(
+
+"sesiones"
+
+).innerHTML=totalSesiones;
+
+function abrirExpediente(id){
+
+localStorage.setItem(
+
+"pacienteSeleccionado",
+
+id
+
+);
+
+window.location.href=
+
+"expediente.html";
+
+}
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>FisioApp - Paciente</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+    background:#f1f5f9;
+}
+
+.sidebar{
+    width:260px;
+    min-height:100vh;
+    background:#1e3a8a;
+    color:white;
+    position:fixed;
+    padding:20px;
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo img{
+    width:80px;
+    height:80px;
+    object-fit:contain;
+}
+
+.main{
+    margin-left:260px;
+    padding:25px;
+}
+
+.menu a{
+    display:block;
+    color:white;
+    text-decoration:none;
+    padding:10px;
+    border-radius:8px;
+    margin-bottom:5px;
+}
+
+.menu a:hover{
+    background:#2563eb;
+}
+
+.card-custom{
+    border:none;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.05);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<div class="logo">
+
+<img src="img/logo.jpg">
+
+<h4>FisioApp</h4>
+
+</div>
+
+<div id="usuarioInfo"></div>
+<button
+class="btn btn-primary mb-3"
+onclick="togglePerfil()">
+
+👤 Mi Perfil
+
+</button>
+
+<div
+id="panelPerfil"
+class="collapse mt-3">
+
+    <div class="card-header bg-primary text-white">
+
+        <h5 class="mb-0">
+            Mi Perfil
+        </h5>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="row">
+
+            <div class="col-md-6 mb-3">
+                <label>Nombre Completo</label>
+                <input
+                type="text"
+                id="perfilNombre"
+                class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Correo</label>
+                <input
+                type="email"
+                id="perfilCorreo"
+                class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Usuario</label>
+                <input
+                type="text"
+                id="perfilUsuario"
+                class="form-control">
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Contraseña</label>
+                <input
+                type="password"
+                id="perfilPassword"
+                class="form-control">
+            </div>
+
+        </div>
+
+        <button
+        class="btn btn-success"
+        onclick="guardarPerfil()">
+
+            Guardar Cambios
+
+        </button>
+
+    </div>
+
+</div>
+<hr>
+
+<div class="menu">
+
+<a href="#">
+<i class="fa-solid fa-chart-line"></i>
+Mi Progreso
+</a>
+<a href="expediente.html"
+class="btn btn-primary">
+
+<i class="fa-solid fa-file-medical"></i>
+Ver Mi Expediente
+
+</a>
+<a href="#" onclick="cerrarSesion()">
+<i class="fa-solid fa-right-from-bracket"></i>
+Cerrar Sesión
+</a>
+
+</div>
+
+</div>
+
+<div class="main">
+
+<h2 class="mb-4">
+Bienvenido,
+<span id="nombrePaciente"></span>
+</h2>
+
+<div class="row">
+
+<div class="col-md-4">
+
+<div class="card card-custom p-3">
+
+<h5>Progreso General</h5>
+
+<h2 id="progresoGeneral">
+0%
+</h2>
+
+<div class="progress">
+
+<div
+id="barraProgreso"
+class="progress-bar bg-success"
+style="width:80%">
+
+80%
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card card-custom p-3">
+
+<h5>Estado Clínico</h5>
+
+<h3 class="text-success">
+🟢 Favorable
+</h3>
+
+</div>
+
+</div>
+
+<div class="col-md-4">
+
+<div class="card card-custom p-3">
+
+<h5>Sesiones Totales</h5>
+
+<h2>
+12
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card card-custom p-4 mt-4">
+
+<h4>Evolución</h4>
+
+
+<!-- TU GRÁFICA SE QUEDA AQUÍ -->
+
+<div style="height:350px;">
+
+    <canvas id="graficaProgreso"></canvas>
+
+</div>
+
+</div>
+
+<!-- ==========================
+     FOTOGRAFÍAS DE EVOLUCIÓN
+========================== -->
+
+<div class="card card-custom p-4 mt-4">
+
+    <h3>
+        <i class="fa-solid fa-camera"></i>
+        Mis Fotografías de Evolución
+    </h3>
+
+    <div class="row mt-3">
+
+        <div class="col-md-8">
+
+            <input
+            type="file"
+            id="fotoPaciente"
+            class="form-control"
+            accept="image/*">
+
+        </div>
+
+        <div class="col-md-4">
+
+            <button
+            class="btn btn-success w-100"
+            onclick="subirFoto()">
+
+                <i class="fa-solid fa-upload"></i>
+                Subir Fotografía
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <hr>
+
+    <div
+    class="row"
+    id="galeriaFotos">
+
+    </div>
+
+</div>
+
+<div class="card card-custom p-4 mt-4">
+<h3>Mis Datos</h3>
+
+<div class="card p-3 mb-4">
+    <div class="row">
+
+        <div class="col-md-6">
+            <b>Nombre:</b>
+            <span id="nombre"></span>
+        </div>
+
+        <div class="col-md-6">
+            <b>Edad:</b>
+            <span id="edad"></span>
+        </div>
+
+        <div class="col-md-6 mt-2">
+            <b>Diagnóstico:</b>
+            <span id="diagnostico"></span>
+        </div>
+
+        <div class="col-md-6 mt-2">
+            <b>Teléfono:</b>
+            <span id="telefono"></span>
+        </div>
+
+    </div>
+</div>
+
+<h4>Recomendaciones</h4>
+
+<ul>
+
+<li>
+Continuar ejercicios indicados.
+</li>
+
+<li>
+Mantener asistencia constante.
+</li>
+
+<li>
+Realizar estiramientos diarios.
+</li>
+
+<li>
+Seguir indicaciones del fisioterapeuta.
+</li>
+
+</ul>
+
+</div>
+
+</div>
+
+<script>
+
+const usuarioActivo =
+JSON.parse(
+    sessionStorage.getItem("usuarioActivo")
+);
+
+if(!usuarioActivo){
+
+    location.href = "login.html";
+
+}
+
+document.getElementById("usuarioInfo").innerHTML =
+"👤 " + usuarioActivo.nombre +
+"<br>" + usuarioActivo.rol;
+
+document.getElementById("nombrePaciente").innerText =
+usuarioActivo.nombre;
+
+
+/* ==========================
+   PERFIL USUARIO
+========================== */
+
+document.getElementById("perfilNombre").value =
+usuarioActivo.nombre || "";
+
+document.getElementById("perfilCorreo").value =
+usuarioActivo.correo || "";
+
+document.getElementById("perfilUsuario").value =
+usuarioActivo.usuario || "";
+
+document.getElementById("perfilPassword").value =
+usuarioActivo.password || "";
+
+
+/* ==========================
+   PACIENTE ASOCIADO
+========================== */
+
+let pacientes =
+JSON.parse(
+    localStorage.getItem("pacientes")
+) || [];
+
+let paciente = pacientes.find(
+
+    p => p.correo === usuarioActivo.correo
+
+);
+console.log("Usuario Activo:", usuarioActivo);
+console.log("Paciente encontrado:", paciente);
+
+if(paciente){
+
+    document.getElementById("nombre").innerText =
+    paciente.nombre || "";
+
+    document.getElementById("edad").innerText =
+    paciente.edad || "";
+
+    document.getElementById("diagnostico").innerText =
+    paciente.diagnostico || "";
+
+    document.getElementById("telefono").innerText =
+    paciente.telefono || "";
+
+}
+
+
+
+/* ==========================
+   GRAFICA DESDE SESIONES
+========================== */
+
+let sesiones =
+JSON.parse(
+    localStorage.getItem("sesiones")
+) || [];
+
+console.log("Paciente:", paciente);
+console.log("Sesiones:", sesiones);
+
+let sesionesPaciente = [];
+
+if(paciente){
+
+    sesionesPaciente = sesiones.filter(s =>
+
+        Number(s.pacienteId) === Number(paciente.id)
+
+    );
+
+}
+
+console.log("Sesiones del paciente:", sesionesPaciente);
+
+let etiquetas = sesionesPaciente.map(
+
+    (s,i) => "Sesión " + (i+1)
+
+);
+
+let porcentajes = sesionesPaciente.map(
+
+    s => Number(s.porcentaje)
+
+);
+
+if(porcentajes.length === 0){
+
+    etiquetas = ["Sin sesiones"];
+
+    porcentajes = [0];
+
+}
+/* PROGRESO GENERAL */
+
+let promedio = 0;
+
+if(sesionesPaciente.length > 0){
+
+    promedio =
+    Math.round(
+
+        porcentajes.reduce(
+            (a,b)=>a+b,0
+        ) / porcentajes.length
+
+    );
+
+}
+
+document.getElementById(
+    "progresoGeneral"
+).innerText = promedio + "%";
+
+document.getElementById(
+    "barraProgreso"
+).style.width = promedio + "%";
+
+document.getElementById(
+    "barraProgreso"
+).innerText = promedio + "%";
+
+/* TOTAL SESIONES */
+
+document.querySelectorAll("h2")[2].innerText =
+sesionesPaciente.length;
+
+/* GRAFICA */
+
+const ctx =
+document.getElementById("graficaProgreso").getContext("2d");
+
+new Chart(ctx,{
+
+    type:"line",
+
+    data:{
+
+        labels:etiquetas,
+
+        datasets:[{
+
+            label:"Desempeño (%)",
+
+            data:porcentajes,
+
+            borderColor:"#0d6efd",
+
+            backgroundColor:"rgba(13,110,253,0.20)",
+
+            borderWidth:3,
+
+            pointRadius:6,
+
+            pointBackgroundColor:"#0d6efd",
+
+            fill:true,
+
+            tension:0.4
+
+        }]
+
+    },
+
+    options:{
+
+        responsive:true,
+
+        maintainAspectRatio:false,
+
+        scales:{
+
+            y:{
+
+                beginAtZero:true,
+
+                max:100
+
+            }
+
+        }
+
+    }
+
+});
+
+/* ==========================
+   MOSTRAR / OCULTAR PERFIL
+========================== */
+
+function togglePerfil(){
+
+    let panel =
+    document.getElementById("panelPerfil");
+
+    if(
+        panel.style.display === "none" ||
+        panel.style.display === ""
+    ){
+
+        panel.style.display = "block";
+
+    }else{
+
+        panel.style.display = "none";
+
+    }
+
+}
+/* ==========================
+   GUARDAR PERFIL
+========================== */
+
+function guardarPerfil(){
+
+    let usuarios =
+    JSON.parse(
+        localStorage.getItem("usuarios")
+    ) || [];
+
+    let indice =
+    usuarios.findIndex(
+
+        u =>
+
+        u.usuario === usuarioActivo.usuario
+
+    );
+
+    if(indice === -1){
+
+        alert("Usuario no encontrado");
+        return;
+
+    }
+
+    usuarios[indice].nombre =
+    document.getElementById("perfilNombre").value;
+
+    usuarios[indice].correo =
+    document.getElementById("perfilCorreo").value;
+
+    usuarios[indice].usuario =
+    document.getElementById("perfilUsuario").value;
+
+    usuarios[indice].password =
+    document.getElementById("perfilPassword").value;
+
+    localStorage.setItem(
+        "usuarios",
+        JSON.stringify(usuarios)
+    );
+
+    sessionStorage.setItem(
+        "usuarioActivo",
+        JSON.stringify(usuarios[indice])
+    );
+
+    alert("Perfil actualizado correctamente");
+
+}
+
+
+/* ==========================
+   CERRAR SESION
+========================== */
+
+function cerrarSesion(){
+
+    sessionStorage.clear();
+
+    location.href =
+    "login.html";
+
+}
+/*====================================
+      FOTOGRAFÍAS DEL PACIENTE
+=====================================*/
+
+function obtenerFotos(){
+
+    return JSON.parse(
+        localStorage.getItem("fotosPacientes")
+    ) || [];
+
+}
+
+function guardarFotos(lista){
+
+    localStorage.setItem(
+        "fotosPacientes",
+        JSON.stringify(lista)
+    );
+
+}
+
+async function subirFoto(){
+
+    const archivo = document.getElementById("fotoPaciente").files[0];
+
+    if(!archivo){
+        alert("Seleccione una fotografía.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", archivo);
+    formData.append(
+    "usuario",
+    usuarioActivo.usuario
+);
+
+    try{
+
+        const respuesta = await fetch(
+            "http://127.0.0.1:8000/predict",
+            {
+                method:"POST",
+                body:formData
+            }
+        );
+
+        const data = await respuesta.json();
+
+        let fotos = obtenerFotos();
+
+        fotos.push({
+
+            id: Date.now(),
+
+            usuario: usuarioActivo.usuario,
+
+            fecha: new Date().toLocaleString(),
+
+            imagen: data.imagen,
+
+            resultado: data
+
+        });
+
+        guardarFotos(fotos);
+actualizarDashboard();
+        cargarFotos();
+
+        document.getElementById("fotoPaciente").value="";
+
+        alert("Fotografía analizada correctamente.");
+
+    }catch(error){
+
+        console.error(error);
+
+        alert("No fue posible conectar con la API.");
+
+    }
+
+}
+
+function obtenerDiagnostico(valor){
+
+    if(valor < 1.2){
+
+        return{
+            texto:"Crítico",
+            color:"danger",
+            icono:"🔴"
+        };
+
+    }
+
+    if(valor < 1.7){
+
+        return{
+            texto:"En recuperación",
+            color:"warning",
+            icono:"🟡"
+        };
+
+    }
+
+    return{
+
+        texto:"Favorable",
+        color:"success",
+        icono:"🟢"
+
+    };
+
+}
+function cargarFotos(){
+
+    let fotos =
+    obtenerFotos().filter(
+
+        f =>
+
+        f.usuario ==
+        usuarioActivo.usuario
+
+    );
+
+    let html = "";
+
+    fotos.forEach(foto=>{
+
+        html += `
+
+<div class="col-md-4 mb-4">
+
+    <div class="card shadow-sm">
+
+        <img
+        src="${foto.imagen}"
+        class="card-img-top"
+        style="
+        height:220px;
+        object-fit:cover;
+        ">
+
+        <div class="card-body">
+
+            <small>
+
+                📅 ${foto.fecha}
+
+            </small>
+
+            <hr>
+
+            ${(()=>{
+
+const estado =
+obtenerDiagnostico(
+    Number(foto.resultado.raw_output)
+);
+
+return `
+
+<b>Clase IA:</b>
+
+${foto.resultado.class}
+
+<br>
+
+<b>Valor ANFIS:</b>
+
+${Number(foto.resultado.raw_output).toFixed(3)}
+
+<hr>
+
+<div class="alert alert-${estado.color} p-2">
+
+<h6>
+
+${estado.icono}
+${estado.texto}
+
+</h6>
+
+</div>
+
+`;
+
+})()}
+
+            <hr>
+
+            <button
+            class="btn btn-primary btn-sm"
+            onclick="verFoto('${foto.imagen}')">
+
+                Ver
+
+            </button>
+
+            <button
+            class="btn btn-danger btn-sm"
+            onclick="eliminarFoto(${foto.id})">
+
+                Eliminar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+`;
+
+    });
+
+    document.getElementById(
+        "galeriaFotos"
+    ).innerHTML = html;
+
+}
+
+function eliminarFoto(id){
+
+    if(!confirm(
+        "¿Eliminar fotografía?"
+    )) return;
+
+    let fotos =
+    obtenerFotos();
+
+    fotos =
+    fotos.filter(
+
+        f =>
+
+        f.id != id
+
+    );
+
+    guardarFotos(fotos);
+
+    cargarFotos();
+
+}
+
+function verFoto(imagen){
+
+    let ventana =
+    window.open("","_blank");
+
+    ventana.document.write(`
+
+        <html>
+
+        <head>
+
+        <title>Fotografía</title>
+
+        </head>
+
+        <body style="
+        background:#222;
+        text-align:center;
+        margin:0;
+        ">
+
+        <img
+        src="${imagen}"
+        style="
+        max-width:95%;
+        margin-top:20px;
+        border-radius:15px;">
+
+        </body>
+
+        </html>
+
+    `);
+
+}
+
+cargarFotos();
+
+function actualizarDashboard(){
+
+    let fotos =
+    obtenerFotos().filter(
+
+        f =>
+
+        f.usuario ==
+        usuarioActivo.usuario
+
+    );
+
+    if(fotos.length==0)
+        return;
+
+    let promedio =
+
+    fotos.reduce(
+
+        (s,f)=>
+
+        s +
+
+        Number(f.resultado.raw_output),
+
+        0
+
+    ) / fotos.length;
+
+    promedio =
+
+    Math.min(
+
+        100,
+
+        Math.round(promedio*50)
+
+    );
+
+    document.getElementById(
+        "progresoGeneral"
+    ).innerHTML =
+
+    promedio + "%";
+
+    document.getElementById(
+        "barraProgreso"
+    ).style.width =
+
+    promedio + "%";
+
+    document.getElementById(
+        "barraProgreso"
+    ).innerHTML =
+
+    promedio + "%";
+
+}
+cargarFotos();
+actualizarDashboard();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Fisioterapia</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="sidebar">
+
+    <div class="logo">
+        FisioApp
+    </div>
+
+    <ul class="menu">
+        <li><a href="dashboard.html">Dashboard</a></li>
+        <li><a href="pacientes_admin.html">Pacientes</a></li>
+        <li><a href="sesiones.html">Sesiones</a></li>
+        <li><a href="resultados.html">Resultados</a></li>
+        <li><a href="evolucion.html">Evolución</a></li>
+        <li><a href="fisioterapeuta_admin.html">Fisioterapeuta</a></li>
+        <li><a href="reportes.html">Reportes</a></li>
+    </ul>
+
+</div>
+
+<div class="main">
+
+    <div class="topbar">
+        <h2>Dashboard General</h2>
+        <div class="user">
+            Gustavo
+        </div>
+    </div>
+
+    <div class="content">
+
+        <div class="cards">
+
+<div class="card">
+
+<h3>Fisioterapeutas</h3>
+
+<h1 id="totalFisios">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Pacientes</h3>
+
+<h1 id="totalPacientes">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Sesiones</h3>
+
+<h1 id="totalSesiones">0</h1>
+
+</div>
+
+<div class="card">
+
+<h3>Pacientes Activos</h3>
+
+<h1 id="totalActivos">0</h1>
+
+</div>
+
+</div>
+
+        </div>
+
+        <div class="table-container">
+
+            <h2>Sesiones recientes</h2>
+
+            <br>
+
+           <table id="tablaSesiones">
+
+<thead>
+
+<tr>
+
+<th>Paciente</th>
+
+<th>Ejercicio</th>
+
+<th>Fecha</th>
+
+<th>Desempeño</th>
+
+<th>Estado</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+<hr>
+
+<h2>Fisioterapeutas</h2>
+
+<table id="tablaFisios">
+
+<thead>
+
+<tr>
+
+<th>Nombre</th>
+
+<th>Correo</th>
+
+<th>Usuario</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+
+<br><br>
+
+<h2>Pacientes Registrados</h2>
+
+<table id="tablaPacientes">
+
+<thead>
+
+<tr>
+
+<th>Nombre</th>
+
+<th>Correo</th>
+
+<th>Fisioterapeuta</th>
+
+<th>Estado</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+</tbody>
+
+</table>
+        </div>
+
+    </div>
+
+</div>
+<script>
+
+const usuarios =
+
+JSON.parse(
+
+localStorage.getItem("usuarios")
+
+) || [];
+
+const pacientes =
+
+JSON.parse(
+
+localStorage.getItem("pacientes")
+
+) || [];
+
+const sesiones =
+
+JSON.parse(
+
+localStorage.getItem("sesiones")
+
+) || [];
+
+/* TARJETAS */
+
+document.getElementById("totalFisios").innerHTML =
+
+usuarios.filter(
+
+u=>u.rol==="Fisioterapeuta"
+
+).length;
+
+document.getElementById("totalPacientes").innerHTML =
+
+pacientes.length;
+
+document.getElementById("totalSesiones").innerHTML =
+
+sesiones.length;
+
+document.getElementById("totalActivos").innerHTML =
+
+pacientes.filter(
+
+p=>p.estado==="Activo"
+
+).length;
+
+/* TABLA FISIOS */
+
+let htmlFisios="";
+
+usuarios
+
+.filter(
+
+u=>u.rol==="Fisioterapeuta"
+
+)
+
+.forEach(f=>{
+
+htmlFisios+=`
+
+<tr>
+
+<td>${f.nombre}</td>
+
+<td>${f.correo}</td>
+
+<td>${f.usuario}</td>
+
+</tr>
+
+`;
+
+});
+
+document.querySelector("#tablaFisios tbody").innerHTML=
+
+htmlFisios;
+
+/* TABLA PACIENTES */
+
+let htmlPacientes="";
+
+pacientes.forEach(p=>{
+
+htmlPacientes+=`
+
+<tr>
+
+<td>${p.nombre}</td>
+
+<td>${p.correo}</td>
+
+<td>${p.fisioterapeuta}</td>
+
+<td>${p.estado}</td>
+
+</tr>
+
+`;
+
+});
+
+document.querySelector("#tablaPacientes tbody").innerHTML=
+
+htmlPacientes;
+
+/* ==========================
+   SESIONES RECIENTES
+========================== */
+
+let htmlSesiones = "";
+
+let sesionesRecientes = [...sesiones]
+
+.sort((a,b)=> b.id - a.id)
+
+.slice(0,5);
+
+sesionesRecientes.forEach(s=>{
+
+    let paciente = pacientes.find(
+
+        p => Number(p.id) === Number(s.pacienteId)
+
+    );
+
+    let nombrePaciente = paciente ?
+
+        paciente.nombre :
+
+        "Paciente no encontrado";
+
+    let estado = "🟢 Favorable";
+
+    if(Number(s.porcentaje) < 50){
+
+        estado = "🔴 Bajo";
+
+    }
+    else if(Number(s.porcentaje) < 80){
+
+        estado = "🟡 Medio";
+
+    }
+
+    htmlSesiones += `
+
+    <tr>
+
+        <td>${nombrePaciente}</td>
+
+        <td>${s.ejercicio}</td>
+
+        <td>${s.fecha}</td>
+
+        <td>${s.porcentaje}%</td>
+
+        <td>${estado}</td>
+
+    </tr>
+
+    `;
+
+});
+
+document.querySelector("#tablaSesiones tbody").innerHTML =
+htmlSesiones;
+
+</script>
+</body>
+</html>
